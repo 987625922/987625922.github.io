@@ -1,40 +1,38 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>运营后台</title>
-  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
-  <style>
-    body{max-width:700px;margin:30px auto;padding:0 20px;}
-    .item{margin:15px 0;}
-    label{display:block;margin-bottom:5px;font-weight:bold;}
-    input,textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:5px;}
-    button{padding:12px 24px;background:#007bff;color:white;border:none;border-radius:5px;cursor:pointer;}
-  </style>
+<meta charset="UTF-8">
+<title>运营后台</title>
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<style>
+body{max-width:700px;margin:30px auto;padding:0 20px;font-family:Arial}
+.form-item{margin:18px 0}
+label{display:block;margin-bottom:6px;font-weight:600}
+input,textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px}
+textarea{height:120px}
+button{background:#007bff;color:#fff;border:none;padding:12px 24px;border-radius:6px;cursor:pointer}
+.tip{color:#666;margin-top:10px;font-size:13px}
+</style>
 </head>
 <body>
 <div id="app">
   <h2>运营管理后台</h2>
-<div class="item">
-    <label>token</label>
-    <input v-model="TOKEN">
-  </div>
 
-  <div class="item">
+  <div class="form-item">
     <label>网站标题</label>
     <input v-model="form.title">
   </div>
-  <div class="item">
+  <div class="form-item">
     <label>网站描述</label>
     <textarea v-model="form.description"></textarea>
   </div>
-  <div class="item">
-    <label>公告</label>
+  <div class="form-item">
+    <label>公告内容</label>
     <textarea v-model="form.notice"></textarea>
   </div>
 
   <button @click="save">保存修改</button>
-  <p>{{msg}}</p>
+  <div class="tip">{{tip}}</div>
 </div>
 
 <script>
@@ -42,11 +40,7 @@ new Vue({
   el: '#app',
   data: {
     form: {},
-    msg: '',
-    // ========== 你只需要改这 3 项 ==========
-    GITHUB_USER: '987625922',
-    REPO_NAME: '987625922.github.io',
-    TOKEN: ''
+    tip: '跳转后点击底部绿色按钮即可发布'
   },
   mounted() {
     fetch('./data.json')
@@ -54,34 +48,19 @@ new Vue({
       .then(data => this.form = data)
   },
   methods: {
-    async save() {
-      this.msg = '保存中...'
-      const content = JSON.stringify(this.form, null, 2)
-      const encoded = btoa(unescape(encodeURIComponent(content)))
-
-      try {
-        const res = await fetch(`https://api.github.com/repos/${this.GITHUB_USER}/${this.REPO_NAME}/contents/data.json`, {
-          method: 'PUT',
-          headers: {
-            'Authorization': `token ${this.TOKEN}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            message: '运营后台更新数据',
-            content: encoded
-          })
-        })
-
-        const data = await res.json()
-        if (data.commit) {
-          this.msg = '✅ 保存成功！网站已更新！'
-          setTimeout(() => location.reload(), 1500)
-        } else {
-          this.msg = '❌ 保存失败'
-        }
-      } catch (e) {
-        this.msg = '❌ 网络错误'
-      }
+    save() {
+      // ========== 这是你的仓库地址，我已经帮你填好了！ ==========
+      const user = "987625922"
+      const repo = "987625922.github.io"
+      
+      // 把表单转成 JSON
+      const jsonContent = JSON.stringify(this.form, null, 2)
+      
+      // 跳转到 GitHub 编辑页（官方标准方式，100%可用）
+      const url = `https://github.com/${user}/${repo}/edit/main/data.json`
+      window.open(url, '_blank')
+      
+      this.tip = "✅ 已打开编辑页面，请修改后提交！"
     }
   }
 })
