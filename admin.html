@@ -31,7 +31,7 @@ button{background:#007bff;color:#fff;border:none;padding:12px 24px;border-radius
     <textarea v-model="form.notice"></textarea>
   </div>
 
-  <button @click="save">保存修改</button>
+  <button @click="save">跳转修改</button>
   <div class="tip">{{tip}}</div>
 </div>
 
@@ -40,7 +40,7 @@ new Vue({
   el: '#app',
   data: {
     form: {},
-    tip: '跳转后点击底部绿色按钮即可发布'
+    tip: '跳转后，粘贴到编辑框，点击顶部绿色按钮即可发布'
   },
   mounted() {
     fetch('./data.json')
