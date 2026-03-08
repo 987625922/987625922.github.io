@@ -2,73 +2,89 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>运营管理后台</title>
+  <title>运营后台</title>
   <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
   <style>
-    *{box-sizing: border-box;}
-    body{max-width: 900px;margin: 30px auto;padding: 0 20px;font-family: Arial;}
-    .form-item{margin: 20px 0;}
-    label{display: block;margin-bottom: 8px;font-weight: bold;}
-    input, textarea{width: 100%;padding: 12px;border: 1px solid #ddd;border-radius: 6px;font-size: 15px;}
-    textarea{height: 120px;}
-    button{background: #409eff;color: white;border: none;padding: 14px 24px;border-radius: 6px;font-size: 16px;cursor: pointer;}
-    button:hover{background: #338eef;}
-    .tip{color: #666;font-size: 13px;margin-top: 10px;}
+    body{max-width:700px;margin:30px auto;padding:0 20px;}
+    .item{margin:15px 0;}
+    label{display:block;margin-bottom:5px;font-weight:bold;}
+    input,textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:5px;}
+    button{padding:12px 24px;background:#007bff;color:white;border:none;border-radius:5px;cursor:pointer;}
   </style>
 </head>
 <body>
-  <div id="app">
-    <h2>运营管理后台</h2>
-
-    <div class="form-item">
-      <label>网站标题</label>
-      <input v-model="form.title" placeholder="请输入标题">
-    </div>
-
-    <div class="form-item">
-      <label>网站描述</label>
-      <textarea v-model="form.description" placeholder="请输入描述"></textarea>
-    </div>
-
-    <div class="form-item">
-      <label>联系电话</label>
-      <input v-model="form.contact" placeholder="请输入电话">
-    </div>
-
-    <div class="form-item">
-      <label>公告内容</label>
-      <textarea v-model="form.notice" placeholder="请输入公告"></textarea>
-    </div>
-
-    <button @click="saveData">保存修改</button>
-    <div class="tip">保存后会跳转到 GitHub，点击底部绿色按钮即可生效</div>
+<div id="app">
+  <h2>运营管理后台</h2>
+<div class="item">
+    <label>token</label>
+    <input v-model="token">
   </div>
 
-  <script>
-    new Vue({
-      el: '#app',
-      data: {
-        form: {}
-      },
-      mounted() {
-        // 加载 JSON 数据到表单
-        fetch('./data.json')
-          .then(res => res.json())
-          .then(data => {
-            this.form = data;
+  <div class="item">
+    <label>网站标题</label>
+    <input v-model="form.title">
+  </div>
+  <div class="item">
+    <label>网站描述</label>
+    <textarea v-model="form.description"></textarea>
+  </div>
+  <div class="item">
+    <label>公告</label>
+    <textarea v-model="form.notice"></textarea>
+  </div>
+
+  <button @click="save">保存修改</button>
+  <p>{{msg}}</p>
+</div>
+
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    form: {},
+    msg: '',
+    // ========== 你只需要改这 3 项 ==========
+    GITHUB_USER: '987625922',
+    REPO_NAME: '987625922.github.io',
+    TOKEN: ''
+  },
+  mounted() {
+    fetch('./data.json')
+      .then(res => res.json())
+      .then(data => this.form = data)
+  },
+  methods: {
+    async save() {
+      this.msg = '保存中...'
+      const content = JSON.stringify(this.form, null, 2)
+      const encoded = btoa(unescape(encodeURIComponent(content)))
+
+      try {
+        const res = await fetch(`https://api.github.com/repos/${this.GITHUB_USER}/${this.REPO_NAME}/contents/data.json`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `token ${this.TOKEN}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: '运营后台更新数据',
+            content: encoded
           })
-      },
-      methods: {
-        saveData() {
-          // 把表单转成格式化 JSON
-          const jsonStr = JSON.stringify(this.form, null, 2);
-          
-          // 跳转到 GitHub 编辑页面（自动带修改好的内容）
-          const url = "https://github.com/987625922/987625922/edit/main/data.json?value=" + encodeURIComponent(jsonStr);
-          window.open(url, '_blank');
+        })
+
+        const data = await res.json()
+        if (data.commit) {
+          this.msg = '✅ 保存成功！网站已更新！'
+          setTimeout(() => location.reload(), 1500)
+        } else {
+          this.msg = '❌ 保存失败'
         }
+      } catch (e) {
+        this.msg = '❌ 网络错误'
       }
-    })
-  </script>
+    }
+  }
+})
+</script>
 </body>
 </html>
