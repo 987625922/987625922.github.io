@@ -127,13 +127,43 @@
         }
       },
       mounted() {
-        fetch('./data.json')
-          .then(res => res.json())
-          .then(data => {
-            this.rawData = data
+        // fetch('./data.json')
+        //   .then(res => res.json())
+        //   .then(data => {
+        //     this.rawData = data
+        //     this.buildTreeData()
+        //   }
+        //   )
+            this.rawData = [{
+            "brand": "Apple iPhone",
+            "model": "iPhone 8",
+            "issue": "Back Glass Replacement",
+            "price": "99",
+            "time": "30 minutes to 2 hours"
+          },
+          {
+            "brand": "Apple iPhone",
+            "model": "iPhone 8",
+            "issue": "Battery Replacement",
+            "price": "69",
+            "time": "20 - 40 minutes"
+          },
+          {
+            "brand": "Apple iPhone",
+            "model": "iPhone X",
+            "issue": "Screen Replacement",
+            "price": "199",
+            "time": "1 - 2 hours"
+          },
+          {
+            "brand": "Samsung",
+            "model": "Galaxy S21",
+            "issue": "Screen Repair",
+            "price": "149",
+            "time": "1.5 hours"
+          }]
             this.buildTreeData()
-          }
-          )
+
       },
       methods: {
         // 初始化树形数据
@@ -257,7 +287,6 @@
               traverse(child, newBrand, newModel)
             })
           }
-          debugger
           this.tableData.forEach(root => traverse(root))
           this.rawDataResult = result
         },
@@ -282,28 +311,32 @@
           del(this.tableData)
         },
         openDialog() { },
-        pushGit: async () => {
-          // ========== 这是你的仓库地址，我已经帮你填好了！ ==========
-          const user = "987625922"
-          const repo = "987625922.github.io"
-          await handleCopy()
-          // 跳转到 GitHub 编辑页（官方标准方式，100%可用）
-          const url = `https://github.com/${user}/${repo}/edit/main/data.json`
-          window.open(url, '_blank')
-
-        },
-        // 复制函数
-        handleCopy: async () => {
-          try {
-            // 调用原生剪贴板 API
-            await navigator.clipboard.writeText(rawDataResult)
-            copySuccess.value = true
-            // 2秒后隐藏提示
-            setTimeout(() => copySuccess.value = false, 2000)
-          } catch (err) {
-            console.error('复制失败：', err)
-            alert('复制失败，请手动复制')
-          }
+   
+    // 修复1：改为普通函数，保证this指向Vue实例
+    pushGit: async function() {
+      const user = "987625922"
+      const repo = "987625922.github.io"
+      this.convertTreeToRaw()
+      await this.handleCopy()
+      const url = `https://github.com/${user}/${repo}/edit/main/data.json`
+      window.open(url, '_blank')
+    },
+    
+    // 修复2：改为普通函数，修正变量访问方式
+    handleCopy: async function() {
+      try {
+        // 修复：通过this访问rawDataResult，并转为字符串
+        await navigator.clipboard.writeText(JSON.stringify(this.rawDataResult))
+        // 修复：通过this访问copySuccess
+        this.copySuccess = true
+        setTimeout(() => {
+          this.copySuccess = false
+        }, 2000)
+        this.$message.success('复制成功！') // 替换alert为ElementUI提示
+      } catch (err) {
+        console.error('复制失败：', err)
+        this.$message.error('复制失败，请手动复制')
+      }
         }
       }
     })
