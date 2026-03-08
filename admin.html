@@ -127,42 +127,42 @@
         }
       },
       mounted() {
-        // fetch('./data.json')
-        //   .then(res => res.json())
-        //   .then(data => {
-        //     this.rawData = data
-        //     this.buildTreeData()
-        //   }
-        //   )
-            this.rawData = [{
-            "brand": "Apple iPhone",
-            "model": "iPhone 8",
-            "issue": "Back Glass Replacement",
-            "price": "99",
-            "time": "30 minutes to 2 hours"
-          },
-          {
-            "brand": "Apple iPhone",
-            "model": "iPhone 8",
-            "issue": "Battery Replacement",
-            "price": "69",
-            "time": "20 - 40 minutes"
-          },
-          {
-            "brand": "Apple iPhone",
-            "model": "iPhone X",
-            "issue": "Screen Replacement",
-            "price": "199",
-            "time": "1 - 2 hours"
-          },
-          {
-            "brand": "Samsung",
-            "model": "Galaxy S21",
-            "issue": "Screen Repair",
-            "price": "149",
-            "time": "1.5 hours"
-          }]
+        fetch('./data.json')
+          .then(res => res.json())
+          .then(data => {
+            this.rawData = data
             this.buildTreeData()
+          }
+          )
+          //   this.rawData = [{
+          //   "brand": "Apple iPhone",
+          //   "model": "iPhone 8",
+          //   "issue": "Back Glass Replacement",
+          //   "price": "99",
+          //   "time": "30 minutes to 2 hours"
+          // },
+          // {
+          //   "brand": "Apple iPhone",
+          //   "model": "iPhone 8",
+          //   "issue": "Battery Replacement",
+          //   "price": "69",
+          //   "time": "20 - 40 minutes"
+          // },
+          // {
+          //   "brand": "Apple iPhone",
+          //   "model": "iPhone X",
+          //   "issue": "Screen Replacement",
+          //   "price": "199",
+          //   "time": "1 - 2 hours"
+          // },
+          // {
+          //   "brand": "Samsung",
+          //   "model": "Galaxy S21",
+          //   "issue": "Screen Repair",
+          //   "price": "149",
+          //   "time": "1.5 hours"
+          // }]
+          //   this.buildTreeData()
 
       },
       methods: {
